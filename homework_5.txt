@@ -37,11 +37,15 @@ commit 8c928e83589d90a031f811fae52a81be7153e82f
 git show 8c928e83589d90a031f811fae52a81be7153e82f | grep '+func providerSource' #функция создана в этом коммите, начал проверять с него, т.к. он создан раньше второго.
 
 #6
-git log -S 'globalPluginDirs' --oneline
-получаем и проверяем каждый git show git show c0b176109 
-35a058fb3 - тут функцию просто вызвали
-c0b176109 - тут функцию не меня, а лишь о ней упомянули в коментарии
-8364383c3 - в этом коммите функция создана
+git grep -n globalPluginDirs
+после чего узнаем что в файле plugins.go данная функция создана.
+получаем все коммиты, в теле функции которых происходили изменения
+git log -L :globalPluginDirs:plugins.go | grep commit 
+commit 78b12205587fe839f10d946ea3fdc06719decb05
+commit 52dbf94834cb970b510f2fba853a5b49ad9b1a46
+commit 41ab0aef7a0fe030e84018973a64135b11abcd70
+commit 66ebff90cdfaa6938f26f908c7ebad8d547fea17
+commit 8364383c359a6b738a436d1b7745ccdce178df47
 
 #7
 git log -S 'synchronizedWriters' --pretty=format:"%h %an"
