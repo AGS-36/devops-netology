@@ -1,0 +1,29 @@
+#8
+HISTSIZE 
+A value of ignoreboth is shorthand for ignorespace and ignoredups.
+ignoreboth - это значение для переменной HISTCONTROL ,которая включает в себя ignorespace и ignoredups. Удаляет пробелы перед командой и не записывает повторяющиеся команды в историю (относительно предыдущей команды, а не всей истории).
+
+#9
+Brace Expansion 
+
+#10
+touch file{1..100000}.txt
+touch file{1..300000}.txt
+bash: /usr/bin/touch: Argument list too long
+Почитал, вроде бы тут устанавливается максимальное число аргументов.
+limit for maximum arguments:
+# getconf ARG_MAX
+
+#10
+[[ -d /tmp ]]
+Это конструкция проверяет существует ли директория /tmp
+Это равнозночно test -d /tmp
+echo $? 
+если результат - 0, то выражение истино.
+
+#11
+mkdir -p /tmp/new_path_directory
+sudo cp bin/bash /usr/local/bin/
+sudo cp bin/bash /tmp/new_path_directory/
+PATH=/tmp/new_path_directory:/usr/local/bin:/bin:$PATH
+
