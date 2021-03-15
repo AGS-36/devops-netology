@@ -14,19 +14,19 @@ bash: /usr/bin/touch: Argument list too long
 limit for maximum arguments:
 # getconf ARG_MAX
 
-#10
+#11
 [[ -d /tmp ]]
 Это конструкция проверяет существует ли директория /tmp
 Это равнозночно test -d /tmp
 echo $? 
 если результат - 0, то выражение истино.
 
-#11
+#12
 mkdir -p /tmp/new_path_directory
 sudo cp bin/bash /usr/local/bin/
 sudo cp bin/bash /tmp/new_path_directory/
 PATH=/tmp/new_path_directory:/usr/local/bin:/bin:$PATH
 
-#12
+#13
 at позволяет запустить задачу в указанное время.
 batch указывает системе запускать задание только, если загрузка системы находится на определенном уровне (средняя загрузка <1,5). Задания будут выполняться, когда средняя загрузка ЦП по умолчанию опустится ниже 1,5. В отличие от at не нужно задавать время.
