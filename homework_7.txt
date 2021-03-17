@@ -1,5 +1,7 @@
 #1
-
+type cd
+cd is a shell builtin
+Команда встроена в оболочку из-за того, что эта одна из основных команд таких как pwd, export. Работа без этих команд невозможна.
 
 #2
 grep -c <some_string> <some_file>
