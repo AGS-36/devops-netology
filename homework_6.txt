@@ -1,3 +1,12 @@
+#5
+1ГБ ОЗУ, 8Mб видеопамяти, 1ЦП
+
+#6
+config.vm.provider "virtualbox" do |v|
+  v.memory = 1024
+  v.cpus = 2
+end
+
 #8
 HISTSIZE 
 A value of ignoreboth is shorthand for ignorespace and ignoredups.
