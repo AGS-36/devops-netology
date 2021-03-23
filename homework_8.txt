@@ -1,0 +1,12 @@
+#1
+chdir("/tmp")
+
+#2
+openat(AT_FDCWD, "/usr/share/misc/magic.mgc", O_RDONLY) = 3
+/usr/share/misc/magic.mgc
+
+#3
+узнаем pid приложения и файл и файловый дескриптор (к примеру 4978 и 1w)
+lsof | grep filename
+Вот так получилось освободить место в памяти
+cat /dev/null > /proc/4978/fd/1
