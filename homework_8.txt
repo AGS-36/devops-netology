@@ -10,3 +10,54 @@ openat(AT_FDCWD, "/usr/share/misc/magic.mgc", O_RDONLY) = 3
 lsof | grep filename
 Вот так получилось освободить место в памяти
 cat /dev/null > /proc/4978/fd/1
+
+#4
+Зомби не занимают памяти (как процессы-сироты), но блокируют записи в таблице процессов, размер которой ограничен для каждого пользователя и системы в целом.
+
+#5
+3142   gnome-terminal-    20   0 /usr/share/icons/Yaru/scalable/actions/open-men
+u-symbolic.svg
+
+#6
+uname также является системным вызовом
+uname({sysname="Linux", nodename="archlinux", ...}) = 0
+newfstatat(1, "", {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0x1), ...}, AT_EMPTY_PATH) = 0
+
+write(1, "Linux archlinux 5.10.22-2-lts #1"..., 86Linux archlinux 5.10.22-2-lts #1 SMP Wed, 10 Mar 2021 10:30:57 +0000 x86_64 GNU/Linux
+) = 86
+
+Part of the utsname information is also accessible via
+/proc/sys/kernel/{ostype, hostname, osrelease, version, domainname}.
+
+#7
+&& - логический оператор 
+команда echo Hi запустится в том случае, если test -d /tmp/some_dir завершается с успешным кодом возврата, то есть нулевое состояние выхода (истина).
+; - это простая последовательность
+команда test -d /tmp/some_dir; echo Hi будет работать независимо от состояния выхода команды test -d /tmp/some_dir;
+
+set -e - устанавливает немедленный выход, если команда вернет не нулевой статус (закроет скрипт, или облочнку), то, используя &&, команда просто не выполнится.
+
+#8
+set -euxo pipefail
+
+-e  Exit immediately if a command exits with a non-zero status.
+-u  Treat unset variables as an error when substituting.
+-x  Print commands and their arguments as they are executed.
+-o option-name
+pipefail     the return value of a pipeline is the status of
+             the last command to exit with a non-zero status,
+             or zero if no command exited with a non-zero status
+
+Эта команда установит определенные правила:
+1. устанавливает немедленный выход, если код возврата не нулевой (-е);
+2. если попытаемся подставить в команду неназначенную переменную, то тоже получим немедленный выход (-u);
+3. печатает команды и относящиеся к ним аргументы, по мере их выполнения (-х);
+4. Оболочка bash обычно смотрит только на код выхода последней команды конвейера. Такое поведение не является идеальным, поскольку оно приводит к тому, что параметр-e может действовать только на код выхода последней команды конвейера(ls несуществующая директория | ls /root). После -о pipefile все команды конвеера должны быть успешно завершены.
+
+#9
+S - прерываемый сон - процесс ожидает определенного события или сигнала
+
+Дополнительные к основной заглавной букве статуса процессов используется для форматов BSD.
+У Ss или Ssl выше приоритет, чем просто у S.
+Только один процесс в сессии может именть статус Ss или Ssl
+s - is a session leader
