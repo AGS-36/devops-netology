@@ -1,0 +1,25 @@
+#1
+создаем сервис
+sudo touch /etc/systemd/system/node_exporter.service
+
+создаем скрипт в папке 
+vim start_node_exporter
+делаем его исполняемым
+sudo chmod +x ~/bin/start_node_exporter
+systemstl enable node_exporter
+
+
+
+#4
+sudo dmesg | grep "Hypervisor detected"
+Если система физическая, мы не увидим никаких выходных данных.
+
+hostnamectl status
+systemd-detect-virt
+
+#5
+Это означает максимальное количество дескрипторов файлов, которое может выделить процесс. Значение по умолчанию - 1024 * 1024 (1048576).
+
+ulimit -n
+
+#6
