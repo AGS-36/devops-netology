@@ -19,8 +19,7 @@ sudo systemctl status node_exporter
 sudo systemctl enable node_exporter
 
 #2
-sudo vim /etc/prometheus/prometheus.yml
-
+--collectors.enabled cpu, meminfo, netstat, diskstats
 
 #4
 sudo dmesg | grep "Hypervisor detected"
@@ -41,4 +40,21 @@ nsenter --target 3451 --mount --uts --ipc --net --pid ps aux
 USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
 root           1  0.0  0.0   5364   684 pts/2    S+   11:25   0:00 sleep 1h
 root           2  0.0  0.0   9940  3240 pts/4    R+   11:27   0:00 ps aux
+
+#7
+:(){ :|:& };: - Логическая бомба (известная также как fork bomb), функция забивающая память системы, что в итоге приводит к её зависанию.
+Где:
+
+    :() — Определение функции.
+    {  — Открытие функции.
+    :|: — Далее, загружает копию функции «:» в память тем самым, будет вызывать само себя с использованием техники программирования ( так называемая рекурсия) и передает результат на другой вызов функции.
+    ‘:’ — Худшая часть — функция, вызываемая два раза, чтобы «бомбить» вашу систему.
+    & — Помещает вызов функции в фоновом режиме, чтобы fork (дочерний процесс) не мог «умереть» вообще, тем самым это начнет есть системные ресурсы.
+    } — Закрытие функции.
+    ; — Завершите определение функции. Т.е является разделителем команд, (такой как и &&).
+    : — Запускает функцию которая порождает fork bomb().
+
+Изменить максимальное число процессов можно командой ulimit -u  
+
+cgroup: fork rejected by pids controller in /user.slice/user-1000.slice/user@1000.service
 
