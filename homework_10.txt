@@ -1,0 +1,70 @@
+#2
+Первоначально, при создании файла его владельцем объявляется тот пользователь, который этот файл создал. Точнее – тот пользователь, от чьего имени запущен процесс, создающий файл. 
+Файлы, являющиеся жесткой ссылкой, могут иметь различные права доступа, т.к. это два разных файла(а любому файлу можно задать определенные права доступа), ссылающиеся на один объект.
+
+
+#4-14
+vda                    252:0    0   40G  0 disk
+├─vda1                 252:1    0  512M  0 part  /boot/efi
+├─vda2                 252:2    0    1K  0 part
+└─vda5                 252:5    0 39.5G  0 part  /
+vdb                    252:16   0  2.5G  0 disk
+├─vdb1                 252:17   0    2G  0 part
+│ └─md0                  9:0    0    2G  0 raid1
+└─vdb2                 252:18   0  511M  0 part
+  └─md1                  9:1    0 1018M  0 raid0
+    └─volgroup-lv_base 253:0    0  100M  0 lvm   /tmp/new
+vdc                    252:32   0  2.5G  0 disk
+├─vdc1                 252:33   0    2G  0 part
+│ └─md0                  9:0    0    2G  0 raid1
+└─vdc2                 252:34   0  511M  0 part
+  └─md1                  9:1    0 1018M  0 raid0
+    └─volgroup-lv_base 253:0    0  100M  0 lvm   /tmp/new
+
+#15
+[q@asus new]$ gzip -t /tmp/new/test.gz
+[q@asus new]$ echo $?
+0
+
+#16
+sudo pvmove -n lv_base /dev/md1 /dev/md0
+
+vda                    252:0    0   40G  0 disk
+├─vda1                 252:1    0  512M  0 part  /boot/efi
+├─vda2                 252:2    0    1K  0 part
+└─vda5                 252:5    0 39.5G  0 part  /
+vdb                    252:16   0  2.5G  0 disk
+├─vdb1                 252:17   0    2G  0 part
+│ └─md0                  9:0    0    2G  0 raid1
+│   └─volgroup-lv_base 253:0    0  100M  0 lvm
+└─vdb2                 252:18   0  511M  0 part
+  └─md1                  9:1    0 1018M  0 raid0
+vdc                    252:32   0  2.5G  0 disk
+├─vdc1                 252:33   0    2G  0 part
+│ └─md0                  9:0    0    2G  0 raid1
+│   └─volgroup-lv_base 253:0    0  100M  0 lvm
+└─vdc2                 252:34   0  511M  0 part
+  └─md1                  9:1    0 1018M  0 raid0
+
+#17
+sudo mdadm --fail /dev/md0 /dev/vdb1
+
+[q@asus ~]$ cat /proc/mdstat
+Personalities : [raid1] [raid0]
+md1 : active raid0 vdc2[1] vdb2[0]
+      1042432 blocks super 1.2 512k chunks
+
+md0 : active raid1 vdc1[1] vdb1[0](F)
+      2094080 blocks super 1.2 [2/1] [_U]
+
+#18
+sudo dmesg
+
+[20904.043995] md/raid1:md0: Disk failure on vdb1, disabling device.
+               md/raid1:md0: Operation continuing on 1 devices.
+
+#19
+[q@asus new]$ gzip -t /tmp/new/test.gz
+[q@asus new]$ echo $?
+0
+
