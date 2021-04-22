@@ -1,0 +1,75 @@
+#1
+Bandwidth-delay Product and buffer size
+BDP (1024 Mbit/sec, 300.0 ms) = 38.40 MByte
+required tcp buffer to reach 1024 Mbps with RTT of 300.0 ms >= 37500.0 KByte
+maximum throughput with a TCP window of 0 KByte and RTT of 300.0 ms <= 0.00 Mbit/sec.
+
+#2
+network limit (MSS 1460 byte, RTT: 80.0 ms, Loss: 10-08 (10-06%)) : 1460.00 Mbit/sec.
+network limit (MSS 1460 byte, RTT: 80.0 ms, Loss: 1%) : 1.46 Mbit/sec.
+1460 / 1.46 = 1000
+В 1000 раз
+
+#3
+для 100 Мб/с / 8 = 12,5 МБ/с.
+При этом необходимо помнить, что такая скорость будет актуальна для идеальных условий и зависит не только от качества соединения вашего компьютера, но также и от максимальной скорости, предоставляемой ресурсом. Обычно скорость бывает ниже, ведь помимо прочих данных передаются также заголовки TCP, IP и PPP.
+С учетом L2/IP/TCP - 11,25
+С учетом L2/IP/UDP - 11,5
+
+Скорость передачи зависит от размера фрейма. Это связано с выгодой соотношения Payload к заголовкам. Чем больше это соотношение, тем эффективней мы можем использовать линию связи.
+
+#4
+1 делается запрос к DNS серверу
+12:21:27.166525 IP archlinux.59172 > _gateway.domain: 42602+ A? netology.ru. (29)
+12:21:27.166536 IP archlinux.59172 > _gateway.domain: 18788+ AAAA? netology.ru. (29)
+12:21:27.169635 IP _gateway.domain > archlinux.59172: 18788 3/0/0 AAAA 2606:4700:10::ac43:2b53, AAAA 2606:4700:10::6816:30ab, AAAA 2606:4700:10::6816:31ab (113)
+12:21:27.171934 IP _gateway.domain > archlinux.59172: 42602 3/0/0 A 104.22.49.171, A 172.67.43.83, A 104.22.48.171 (77)
+В результате чего были выяснены IP адреса 104.22.49.171, 172.67.43.83, 104.22.48.171
+2 Идет установка соединения c сервером по IP6 2606:4700:10::ac43:2b53 (104.22.49.171)
+Весь маршрут следования пакета
+~ ► traceroute 104.22.49.171
+traceroute to 104.22.49.171 (104.22.49.171), 30 hops max, 60 byte packets
+ 1  _gateway (192.168.100.1)  0.719 ms  0.617 ms  0.576 ms
+ 2  * 84-235-125-2.saudi.net.sa (84.235.125.2)  3.114 ms *
+ 3  10.188.193.48 (10.188.193.48)  4.964 ms  4.928 ms  5.050 ms
+ 4  10.188.193.21 (10.188.193.21)  5.017 ms  4.983 ms 10.188.193.43 (10.188.193.43)  6.283 ms
+ 5  10.188.195.6 (10.188.195.6)  93.791 ms 10.188.195.10 (10.188.195.10)  83.383 ms  83.349 ms
+ 6  * ams-ix.as13335.net (80.249.211.140)  91.953 ms  92.312 ms
+ 7  104.22.49.171 (104.22.49.171)  83.076 ms  82.602 ms  80.849 ms
+
+12:21:27.172081 IP6 archlinux.44272 > 2606:4700:10::ac43:2b53.http: Flags [S], seq 2146381643, win 64952, options [mss 1412,sackOK,TS val 135142598 ecr 0,nop,wscale 7], length 0
+12:21:27.253401 IP6 2606:4700:10::ac43:2b53.http > archlinux.44272: Flags [S.], seq 3979131630, ack 2146381644, win 65535, options [mss 1360,nop,nop,sackOK,nop,wscale 10], length 0
+12:21:27.253446 IP6 archlinux.44272 > 2606:4700:10::ac43:2b53.http: Flags [.], ack 1, win 508, length 0
+3 запрос ресурса без тела ответа (только заголовки) 
+12:21:27.253557 IP6 archlinux.44272 > 2606:4700:10::ac43:2b53.http: Flags [P.], seq 1:77, ack 1, win 508, length 76: HTTP: HEAD / HTTP/1.1
+12:21:27.336022 IP6 2606:4700:10::ac43:2b53.http > archlinux.44272: Flags [.], ack 77, win 64, length 0
+Получаем от сервера запрошенный ресурс был на постоянной основе перемещён в новое месторасположение https://netology.ru/
+12:21:27.353998 IP6 2606:4700:10::ac43:2b53.http > archlinux.44272: Flags [P.], seq 1:377, ack 77, win 64, length 376: HTTP: HTTP/1.1 301 Moved Permanently
+Закрываем соединение
+12:21:27.354022 IP6 archlinux.44272 > 2606:4700:10::ac43:2b53.http: Flags [.], ack 377, win 506, length 0
+12:21:27.354315 IP6 archlinux.44272 > 2606:4700:10::ac43:2b53.http: Flags [F.], seq 77, ack 377, win 506, length 0
+12:21:27.436652 IP6 2606:4700:10::ac43:2b53.http > archlinux.44272: Flags [F.], seq 377, ack 78, win 64, length 0
+12:21:27.436683 IP6 archlinux.44272 > 2606:4700:10::ac43:2b53.http: Flags [.], ack 378, win 506, length 0
+
+#5
+~ ► dig NS . @1.1.1.1 +noall +answer  | head -n1
+.			515762	IN	NS	a.root-servers.net.
+~ ► dig NS uk. @a.root-servers.net. +noall +authority | head -n1
+uk.			172800	IN	NS	nsa.nic.uk.
+~ ► dig NS www.google.co.uk @nsa.nic.uk. +noall +authority | head -n1
+google.co.uk.		172800	IN	NS	ns1.google.com.
+~ ► dig A www.google.co.uk @ns1.google.com. +answer  | egrep '(^www.google.co.uk.|^;; flags)' | head -n2
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+#6
+/25 = 2^7 = 128 (еще нужно отнять 2 и получаем 126)
+255.248.0.0 = 2^19 = 524288 (524286)
+
+#7
+/23 = 2^9 = 512 (510)
+/24 = 2^8 = 256 (254)
+/23 > /24
+
+#8
+Получится т.к. c маской /8 доступно 16777214 адресов. Разбивая на 128 подсетей мы забираем еще 7 бит. И получаем 128 сетей по 131070 адресов. 
+Netmask:   255.254.0.0 = 15     11111111.11111110.00000000.00000000
