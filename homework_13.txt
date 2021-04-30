@@ -1,0 +1,123 @@
+#1
+С LVS-NAT директор видит все пакеты между клиентом и реальным сервером, поэтому всегда знает состояние TCP-соединений, а список из ipvsadm является точным. Однако для LVS-DR, LVS-Tun директор не видит пакетов от реального сервера к клиенту. Завершение TCP-соединения происходит, когда один из концов отправляет FIN с последующим ответом ACK с другого конца. Затем другой конец отправляет свой FIN, за которым следует ACK от первой машины. Если реальный сервер инициирует завершение соединения, директор сможет сделать вывод, что это произошло, только по ACK от клиента. В любом случае директор должен сделать вывод о том, что соединение было закрыто из частичной информации и использует свою собственную таблицу тайм-аутов, чтобы объявить, что соединение разорвано. Таким образом, количество в столбце InActConn для LVS-DR, LVS-Tun является предполагаемым, а не реальным.
+
+Записи в столбце ActiveConn поступают из
+    сервис с установленным подключением. Примерами служб, которые удерживают соединения в состоянии ESTABLISHED достаточно долго, чтобы их можно было увидеть с помощью ipvsadm, являются telnet и ftp (порт 21).
+
+Записи в столбце InActConn поступают из
+    Нормальная операция
+        Такие службы, как http (в непостоянном режиме, например, HTTP /1.0) или ftp-data (порт 20), закрывают соединения, как только получено обращение / данные (html-страница, gif и т. Д.) (<1 сек). Вы вряд ли увидите что-либо в столбце ActiveConn с этими LVS-сервисами. Вы будете видеть запись в столбце InActConn до тех пор, пока не истечет время ожидания соединения. Если вы получаете 1000 подключений в секунду и для тайм-аута подключения требуется 60 секунд (обычный тайм-аут), тогда у вас будет 60 000 InActConns. Такое количество InActConn вполне нормально. Если вы запускаете сайт электронной коммерции с постоянством 300 секунд, у вас будет 300 000 записей InActConn. Каждая запись занимает 128 байт (300 000 записей - это около 40 МБ памяти, убедитесь, что у вас достаточно оперативной памяти для вашего приложения). Количество ActiveConn может быть очень маленьким.
+    Патологические состояния (например, ваш LVS не настроен должным образом)
+        Идентификационные отложенные соединения: трехстороннее рукопожатие для установления соединения требует всего 3 обмена пакетами (то есть быстро в любой нормальной сети), и вы не будете достаточно быстро с ipvsadm, чтобы увидеть соединение в состояниях до того, как оно станет УСТАНОВЛЕНО. Однако, если служба на реальном сервере находится под authd / identifyd, вы увидите запись InActConn в течение периода задержки.
+        Неправильная маршрутизация (обычно неправильный gw по умолчанию для реальных серверов):
+        В этом случае трехстороннее рукопожатие никогда не будет завершено, соединение зависнет, и в столбце InActConn появится запись.
+Обычно количество InActConn больше или намного больше, чем количество ActiveConn.
+
+Вот LVS-DR LVS, настройка для ftp, telnet и http, после telnetting от клиента (командная строка клиента находится в приглашении telnet).
+
+#2
+Запустил 5 виртуальный машин
+vagrant@netology5:~$ curl -I -s 172.28.128.{10,60,110,140}:80 | grep HTTP
+HTTP/1.1 200 OK
+HTTP/1.1 200 OK
+HTTP/1.1 200 OK
+HTTP/1.1 200 OK
+
+на 1 и 2 установи keepalived
+
+! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     sysadmin@mydomain.com
+     support@mydomain.com
+   }
+   notification_email_from lb1@mydomain.com
+   smtp_server localhost
+   smtp_connect_timeout 30
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface eth0
+    virtual_router_id 101
+    priority 101
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+	172.28.128.200/24
+    }
+
+}
+-------------------------------------------------
+
+! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     sysadmin@mydomain.com
+     support@mydomain.com
+   }
+   notification_email_from lb1@mydomain.com
+   smtp_server localhost
+   smtp_connect_timeout 30
+}
+
+vrrp_instance VI_1 {
+    state BACKUP
+    interface eth0
+    virtual_router_id 101
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+	172.28.128.200/24
+    }
+
+}
+-------------------------------------------------------------
+vagrant@netology5:~$ for i in {1..300}; do curl -I -s 172.28.128.200>/dev/null; done
+
+vagrant@netology1:~$ sudo ipvsadm -Ln --stats
+IP Virtual Server version 1.2.1 (size=4096)
+Prot LocalAddress:Port               Conns   InPkts  OutPkts  InBytes OutBytes
+  -> RemoteAddress:Port
+TCP  172.28.128.200:80                 300     1800        0   119700        0
+  -> 172.28.128.90:80                  150      900        0    59850        0
+  -> 172.28.128.110:80                 150      900        0    59850        0
+
+vagrant@netology3:~$ wc -l /var/log/nginx/access.log
+150 /var/log/nginx/access.log
+
+vagrant@netology4:~$ wc -l /var/log/nginx/access.log
+151 /var/log/nginx/access.log
+
+_______________________________________________________________
+
+Отключил 1 виртуалку (vagrant@netology1)
+
+vagrant@netology5:~$ for i in {1..50}; do curl -I -s 172.28.128.200>/dev/null; done
+
+vagrant@netology2:/etc/keepalived$ sudo ipvsadm 
+IP Virtual Server version 1.2.1 (size=4096)
+Prot LocalAddress:Port Scheduler Flags
+  -> RemoteAddress:Port           Forward Weight ActiveConn InActConn
+TCP  netology2:http rr
+  -> 172.28.128.90:http           Route   1      0          25        
+  -> 172.28.128.110:http          Route   1      0          25    
+
+vagrant@netology3:~$ wc -l /var/log/nginx/access.log
+175 /var/log/nginx/access.log
+
+vagrant@netology4:~$ wc -l /var/log/nginx/access.log
+176 /var/log/nginx/access.log
+
+
+#3
+Предполагаю, что 2 достаточно.
