@@ -41,23 +41,30 @@ SERVICES = ['google.com', 'drive.google.com', 'mail.google.com', 'amazon.com']
 def compare_id(new_dictionary):
     with open('domain_ip.txt', 'rb') as f:
         old_dictionary = pickle.load(f)
-    print(old_dictionary)
-    print('_____________')
-    print(new_dictionary)
+    for key in new_dictionary.keys():
+        if new_dictionary[key] == old_dictionary[key]:
+            print(f'<{key}> - <{new_dictionary[key]}>')
+        else:
+            print(f'ERROR {key} IP mismatch: <{old_dictionary[key]}> <{new_dictionary[key]}>')
+    create_dictionary(new_dictionary)
+
 
 def stdout(data):
     for item in data.items():
         print(f'<{item[0]}> - {item[1]}')
 
 
+def create_dictionary(data):
+    with open('domain_ip.txt', 'wb') as f:
+        pickle.dump(data, f)
+
+
 def check_dictionaty(data):
     if os.path.isfile('domain_ip.txt'):
         compare_id(data)
     else:
-        with open('domain_ip.txt', 'wb') as f:  
-            pickle.dump(data, f)
-            stdout(data)
-
+        create_dictionary(data)
+        stdout(data)
 
 def create_dictionary_domain_ip(domains):
     dictionary = {}
@@ -65,10 +72,8 @@ def create_dictionary_domain_ip(domains):
         ip = socket.gethostbyname(domain)
         dictionary[domain] = ip
     return dictionary
-   
 
-def main():
+
+if __name__ == "__main__":
     dictionary = create_dictionary_domain_ip(SERVICES)
     check_dictionaty(dictionary)
-
-main()
