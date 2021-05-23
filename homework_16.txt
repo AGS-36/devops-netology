@@ -1,0 +1,74 @@
+#1
+1. TypeError: unsupported operand type(s) for +: 'int' and 'str'
+2. c = int(str(a) + b)
+3. c = a + int(b)
+
+
+#2 #3
+import os
+
+
+current_directory = os.getcwd()
+path = input('Enter path (default={}) '.format(current_directory))
+if path == '':
+    path = current_directory
+
+
+def check_git_status(path):
+    try:
+        os.chdir(path)
+    except FileNotFoundError:
+        print('No such directory')
+    else:
+        result_os = os.popen('git status').read()
+        is_change = False
+        for result in result_os.split('\n'):
+            if result.find('modified') != -1:
+                prepare_result = result.replace('\tmodified:   ', '')
+                print(prepare_result)
+
+check_git_status(path)
+
+
+#4
+import socket
+import os.path
+import pickle
+
+SERVICES = ['google.com', 'drive.google.com', 'mail.google.com', 'amazon.com']
+
+
+def compare_id(new_dictionary):
+    with open('domain_ip.txt', 'rb') as f:
+        old_dictionary = pickle.load(f)
+    print(old_dictionary)
+    print('_____________')
+    print(new_dictionary)
+
+def stdout(data):
+    for item in data.items():
+        print(f'<{item[0]}> - {item[1]}')
+
+
+def check_dictionaty(data):
+    if os.path.isfile('domain_ip.txt'):
+        compare_id(data)
+    else:
+        with open('domain_ip.txt', 'wb') as f:  
+            pickle.dump(data, f)
+            stdout(data)
+
+
+def create_dictionary_domain_ip(domains):
+    dictionary = {}
+    for domain in domains:
+        ip = socket.gethostbyname(domain)
+        dictionary[domain] = ip
+    return dictionary
+   
+
+def main():
+    dictionary = create_dictionary_domain_ip(SERVICES)
+    check_dictionaty(dictionary)
+
+main()
