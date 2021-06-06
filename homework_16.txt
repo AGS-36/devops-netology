@@ -5,13 +5,8 @@
 
 
 #2 #3
+import subprocess 
 import os
-
-
-current_directory = os.getcwd()
-path = input('Enter path (default={}) '.format(current_directory))
-if path == '':
-    path = current_directory
 
 
 def check_git_status(path):
@@ -25,9 +20,19 @@ def check_git_status(path):
         for result in result_os.split('\n'):
             if result.find('modified') != -1:
                 prepare_result = result.replace('\tmodified:   ', '')
-                print(prepare_result)
+                print(f'{os.getcwd()}/{prepare_result}')
 
-check_git_status(path)
+def main():
+    current_directory = os.getcwd()
+    path = input('Enter path (default={}) '.format(current_directory))
+    if path == '':
+        path = current_directory
+    if (subprocess.call(['git', '-C', path, 'status'], stderr=subprocess.STDOUT, stdout = open(os.devnull, 'w')) == 0) == True:
+        check_git_status(path)
+    else:
+        print('NOT IS GIT REPOSITORY')
+
+main()
 
 
 #4
