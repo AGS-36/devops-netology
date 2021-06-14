@@ -22,7 +22,7 @@
 
         ```python
     #!/usr/bin/env python3
-    #!/usr/bin/env python3
+    
     import socket
     import os.path
     import pickle
@@ -77,3 +77,5 @@
         dictionary = create_dictionary_domain_ip(SERVICES)
         check_dictionaty(dictionary)
         ```
+
+---
