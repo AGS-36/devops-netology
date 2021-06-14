@@ -1,4 +1,4 @@
-#1
+1.
 
 	    ```json
     {
@@ -18,9 +18,10 @@
     }
         ```
 
-    #2
+ 2.
 
-	```python
+        ```python
+    #!/usr/bin/env python3
     #!/usr/bin/env python3
     import socket
     import os.path
@@ -75,4 +76,4 @@
     if __name__ == "__main__":
         dictionary = create_dictionary_domain_ip(SERVICES)
         check_dictionaty(dictionary)
-    ```
+        ```
