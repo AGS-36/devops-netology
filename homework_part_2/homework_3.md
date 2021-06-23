@@ -30,6 +30,7 @@
 https://hub.docker.com/repository/registry-1.docker.io/stema91/netology/tags?page=1&ordering=last_updated
 
 ## Задача 3
+```
 docker pull centos
 docker pull debian
 docker run --name centos -t -v /home/q/info/:/share/info -d centos
@@ -40,5 +41,5 @@ touch 2.txt
 docker exec -ti debian bash
 root@8ae2c5efef4d:/# ls info/
 1.txt  2.txt
-
+```
 
