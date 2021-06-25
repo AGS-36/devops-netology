@@ -49,7 +49,9 @@ docker_images ► docker run stema91/netology:ponysay_netology
                            ▀
 
 ```
-- Ссылку на образ в вашем хранилище docker-hub
+
+https://hub.docker.com/layers/stema91/netology/ponysay_netology/images/sha256-12786a5145e0c278041da401a5bce4d86e95c2925b43c1273fc9ae4241d4a50b?context=repo
+
 
 ## Задача 2 
 
