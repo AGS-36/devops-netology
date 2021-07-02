@@ -64,12 +64,24 @@ CMD echo 'Hello_netology'
 ```
     
 VER2
-
+![Dockerfile](/ver2/Dockerfile)
+![screenshort](/ver2/2021-07-02_23-17.png)
 ```
 FROM ubuntu:latest
-RUN apt-get update
-RUN apt-get install wget gnupg2 gnupg1 -y
-CMD echo 'Netology'
+RUN apt-get update && apt-get install wget gnupg2 gnupg1 default-jdk -y
+RUN wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -
+RUN sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > \
+    /etc/apt/sources.list.d/jenkins.list'
+RUN apt-get update && apt-get install jenkins -y
+WORKDIR /usr/share/jenkins
+ENTRYPOINT service jenkins start && bash
+EXPOSE 8080
+```
+```
+ver2 ► docker run --name u_j -ti -p 8080:8080  stema91/netology:ver2 
+Correct java version found
+ * Starting Jenkins Automation Server jenkins                                                                   [ OK ] 
+root@65ef978451cf:/usr/share/jenkins# 
 ```
 
 ## Задача 3 
