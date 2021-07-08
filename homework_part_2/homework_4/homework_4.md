@@ -161,9 +161,9 @@ task3 ► docker network inspect bridge-network
                 "IPv4Address": "172.18.0.2/16",
                 "IPv6Address": ""
             },
-            "a0e1fd1a6ddadba1e1d588fe432616f231394b08f4931d92d38ef87a32f78754": {
+            "3e7f0cfd91ab1f2574257d0f58cb8bce4c5265c163f127858d66ab264fe2921a": {
                 "Name": "node",
-                "EndpointID": "f8670b03e28950dfb22282bd89f421750701d50cb5d62d2a796a4ccb82af758a",
+                "EndpointID": "30578f9b1196e90b1fbbdbaffbc9110f94164a777d5b37a8074543ec94745a9d",
                 "MacAddress": "02:42:ac:12:00:03",
                 "IPv4Address": "172.18.0.3/16",
                 "IPv6Address": ""
@@ -173,4 +173,22 @@ task3 ► docker network inspect bridge-network
         "Labels": {}
     }
 ]
+```
+
+```
+root@1cd35fd1653e:~# curl 172.18.0.3:3000/curl
+скопировал часть вывода
+ctumst aliquam duis convallis scelerisque est parturient ullamcorper aliquet fusce suspendisse nunc hac eleifend amet blandit facilisi condimentum commodo scelerisque faucibus aenean ullamcorper ante mauris dignissim consectetuer nullam lorem vestibulum habitant conubia elementum pellentesque morbi facilisis arcu sollicitudin diam cubilia aptent vestibulum auctor eget dapibus pellentesque inceptos leo egestas interdum nulla consectetuer suspendisse adipiscing pellentesque proin lobortis sollicitudin augue elit mus congue fermentum parturient fringilla euismod feugiat</p>\n<p>Aliquam vestibulum nam curae maecenas sed integer cras phasellus suspendisse quisque donec dis praesent accumsan bibendum pellentesque condimentum adipiscing etiam consequat vivamus dictumst aliquam duis convallis scelerisque est parturient ullamcorper aliquet fusce suspendisse nunc hac eleifend amet blandit facilisi condimentum commodo scelerisque faucibus aenean ullamcorper ante mauris dignissim consectetuer nullam lorem vestibulum habitant conubia elementum pellentesque morbi facilisis arcu sollicitudin diam cubilia aptent vestibulum auctor eget dapibus pellentesque inceptos leo egestas interdum nulla consectetuer suspendisse adipiscing pellentesque proin lobortis sollicitudin augue elit mus congue fermentum parturient fringilla euismod feugiat</p>","demoPrdBrochure":"10585","demoPrdOnlineDoc":null,"demoPrdComments":"[2021-05-20 10:04 - Designer DESIGNER]\n[2021-03-22 17:46 - Designer DESIGNER]\n[2021-03-16 10:19 - Designer DESIGNER]\n[2020-06-08 14:23 - Designer]\ntest\n\n[2020-06-08 14:23 - Designer]\ntest\n\n[2021-03-16 10:19 - Designer DESIGNER]\n[2020-06-08 14:23 - Designer]\ntest\n\n[2020-06-08 14:23 - Designer]\ntest\n\n[2021-03-22 17:46 - Designer DESIGNER]\n[2021-03-16 10:19 - Designer DESIGNER]\n[2020-06-08 14:23 - Designer]\ntest\n\n[2020-06-08 14:23 - Designer]\ntest\n\n[2021-03-16 10:19 - Designer DESIGNER]\n[2020-06-08 14:23 - Designer]\ntest\n\n[2020-06-08 14:23 - Designer]\ntest"}];
+    var pc = $('#nodejs-demo-products');
+    for (var i = 0; i < ps.length; i++) {
+      var p = ps[i];
+      pc.append(
+        $('<li/>')
+          .append($('<img/>', { title: p.demoPrdReference, src: 'data:' + p.demoPrdPicture.mime + ';base64,' + p.demoPrdPicture.content }))
+          .append($('<h1/>').append(p.demoPrName))
+          .append($('<h2/>').append(p.demoPrdReference))
+          .append($('<p/>').append(p.demoPrdDescription))
+        );
+    }
+});</script></head><body><div id="nodejs-demo"><div class="text-center" id="header"><img src="/logo.svg" alt="Logo"></div><ul id="nodejs-demo-products"></ul><p class="text-right">&copy; Simplict&eacute; Software, powered by&nbsp;<a href="https://expressjs.com" target="_blank">Express</a></p></div></body></html>root@1cd35fd1653e:~#
 ```
